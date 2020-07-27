@@ -12,13 +12,13 @@ readme = "README.md"
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-memflow-core = { path = "../memflow/memflow-core", features = ["filemap", "plugins"] }
-memflow-derive = { path = "../memflow/memflow-derive" }
+memflow-core = { git = "ssh://git@github.com/memflow/memflow.git", branch = "dev", features = ["plugins", "filemap"] }
+memflow-derive = { git = "ssh://git@github.com/memflow/memflow.git", branch = "dev" }
 log = { version = "0.4.8", default-features = false }
 dataview = "0.1"
 
 [dev-dependencies]
-memflow-win32 = { path = "../memflow/memflow-win32" }
+memflow-win32 = { git = "ssh://git@github.com/memflow/memflow.git", branch = "dev" }
 clap = "2.33.0"
 simple_logger = "1.0.1"
 
