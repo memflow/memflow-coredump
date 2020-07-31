@@ -55,7 +55,8 @@ pub struct CoreDumpHeader32 {
     pub system_up_time: u64,                                  // 0x0fb8
     pub system_time: u64,                                     // 0x0fc0
     pub reserved3: [u8; 56],                                  // 0x0fc8
-} // size: 0x1000
+}
+const _: [(); std::mem::size_of::<CoreDumpHeader32>()] = [(); 0x1000];
 
 #[allow(clippy::uninit_assumed_init)]
 impl CoreDumpHeader32 {

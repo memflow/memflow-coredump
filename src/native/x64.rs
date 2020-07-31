@@ -53,7 +53,8 @@ pub struct CoreDumpHeader64 {
     pub kd_secondary_version: u8,                             // 0x104d only on W2K3 SP1 and up
     pub unused1: [u8; 2],                                     // 0x104e
     pub reserved0: [u8; 4016],                                // 0x1050
-} // size: 0x2000
+}
+const _: [(); std::mem::size_of::<CoreDumpHeader64>()] = [(); 0x2000];
 
 #[allow(clippy::uninit_assumed_init)]
 impl CoreDumpHeader64 {
