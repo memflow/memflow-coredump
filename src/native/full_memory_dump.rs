@@ -5,23 +5,24 @@ use std::convert::Into;
 use dataview::Pod;
 use log::debug;
 use memflow_core::*;
+use memflow_derive::*;
 
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub struct PhysicalMemoryRun<T: Pod> {
+#[derive(Copy, Clone, ByteSwap)]
+pub struct PhysicalMemoryRun<T: Pod + ByteSwap> {
     pub base_page: T,
     pub page_count: T,
 }
 
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub struct PhysicalMemoryDescriptor<T: Pod> {
+#[derive(Copy, Clone, ByteSwap)]
+pub struct PhysicalMemoryDescriptor<T: Pod + ByteSwap> {
     pub number_of_runs: u32,
     pub number_of_pages: T,
     pub runs: [PhysicalMemoryRun<T>; PHYSICAL_MEMORY_MAX_RUNS],
 }
 
-pub fn parse_full_dump<T: Copy + Pod + Into<u64>>(
+pub fn parse_full_dump<T: Pod + ByteSwap + Copy + Into<u64>>(
     descriptor: PhysicalMemoryDescriptor<T>,
     header_size: usize,
 ) -> Result<MemoryMap<(Address, usize)>> {

@@ -9,13 +9,14 @@ use std::mem::MaybeUninit;
 use dataview::Pod;
 use log::info;
 use memflow_core::*;
+use memflow_derive::*;
 
 pub const DUMP_VALID_DUMP64: u32 = 0x34365544;
 pub const IMAGE_FILE_MACHINE_AMD64: u32 = 0x8664;
 
 /// A 64bit Microsoft Windows Coredump Header
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, ByteSwap)]
 pub struct CoreDumpHeader64 {
     pub signature: u32,                                       // 0x0000
     pub valid_dump: u32,                                      // 0x0004
@@ -72,6 +73,10 @@ pub fn parse_coredump64(file: &mut File) -> Result<MemoryMap<(Address, usize)>> 
 
     file.read_exact(header.as_bytes_mut())
         .map_err(|_| Error::Connector("unable to read coredump 64 header"))?;
+
+    if cfg!(target_endian = "big") {
+        header.byte_swap();
+    }
 
     if header.signature != DUMP_SIGNATURE {
         return Err(Error::Connector("header signature is not valid"));
