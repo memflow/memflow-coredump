@@ -64,7 +64,8 @@ pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<(MemoryMap<(Address, usize)
 #[connector(name = "coredump")]
 pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
     let (map, file) = parse_file(
-        args.get_default()
+        args.get("file")
+            .or_else(|| args.get_default())
             .ok_or_else(|| Error::Connector("no path specified"))?,
     )?;
     CoreDump::try_with_filemap(file, map)

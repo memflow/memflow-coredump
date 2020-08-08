@@ -23,6 +23,10 @@ To compile a dynamic library as a plugin use the following command:
 
 ```cargo build --release --all-features```
 
+## Arguments
+
+- `file` - the path of the coredump file to open (default argument)
+
 ## License
 
 Licensed under MIT License, see [LICENSE](LICENSE).
