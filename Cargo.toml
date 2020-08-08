@@ -25,6 +25,9 @@ memflow-win32 = { git = "ssh://git@github.com/memflow/memflow.git", branch = "de
 clap = "2.33.0"
 simple_logger = "1.0.1"
 
+[profile.release]
+lto = true
+
 [features]
 default = ["filemap"]
 plugin = []
