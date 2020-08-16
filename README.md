@@ -4,22 +4,22 @@ This connector implements a the Microsoft Windows Coredump format for 32-bit and
 
 ## Compilation
 
-### Using the library in a rust project
+### Using the crate in a rust project
 
-To use the plugin in a rust project just include it in your Cargo.toml
+To use the connector in a rust project just include it in your Cargo.toml
 
 ```
 memflow-coredump = "0.1"
 ```
 
-Make sure to not enable the `plugin` feature when importing multiple
-connectors in a rust project without using the memflow plugin inventory.
+Make sure to not enable the `inventory` feature when importing multiple
+connectors in a rust project without using the memflow connector inventory.
 This might cause duplicated exports being generated in your project.
 
-### Building the stand-alone plugin
+### Building the stand-alone connector (for dynamic loading)
 
-The stand-alone plugin of this library is feature-gated behind the `plugin` feature.
-To compile a dynamic library as a plugin use the following command:
+The stand-alone connector of this library is feature-gated behind the `inventory` feature.
+To compile a dynamic library for use with the connector inventory use the following command:
 
 ```cargo build --release --all-features```
 
