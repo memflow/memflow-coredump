@@ -7,6 +7,8 @@ use log::debug;
 use memflow_core::*;
 use memflow_derive::*;
 
+const SIZE_4KB: u64 = size::kb(4) as u64;
+
 #[repr(C)]
 #[derive(Copy, Clone, ByteSwap)]
 pub struct PhysicalMemoryRun<T: Pod + ByteSwap> {
@@ -40,8 +42,8 @@ pub fn parse_full_dump<T: Pod + ByteSwap + Copy + Into<u64>>(
     let mut real_base = header_size as u64;
 
     for i in 0..number_of_runs {
-        let base = descriptor.runs[i as usize].base_page.into() << 12;
-        let size = descriptor.runs[i as usize].page_count.into() << 12;
+        let base = descriptor.runs[i as usize].base_page.into() * SIZE_4KB;
+        let size = descriptor.runs[i as usize].page_count.into() * SIZE_4KB;
 
         debug!(
             "adding memory mapping: base={:x} size={:x} real_base={:x}",
@@ -52,6 +54,5 @@ pub fn parse_full_dump<T: Pod + ByteSwap + Copy + Into<u64>>(
         real_base += size;
     }
 
-    // TODO: if the file contains no runs set a range from 0 to 0x0000ffffffffffff
     Ok(mem_map)
 }
