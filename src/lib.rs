@@ -68,7 +68,14 @@ pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
             .or_else(|| args.get_default())
             .ok_or_else(|| Error::Connector("no path specified"))?,
     )?;
-    CoreDump::try_with_filemap(file, map)
+    #[cfg(feature = "filemap")]
+    {
+        Ok(MMAPInfo::try_with_filemap(file, map)?.into_connector())
+    }
+    #[cfg(not(feature = "filemap"))]
+    {
+        Ok(CoreDump::try_with_reader(file, map)?.into_connector())
+    }
 }
 
 #[cfg(test)]
