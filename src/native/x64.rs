@@ -8,7 +8,7 @@ use std::mem::MaybeUninit;
 
 use dataview::Pod;
 use log::info;
-use memflow_core::*;
+use memflow::*;
 use memflow_derive::*;
 
 pub const DUMP_VALID_DUMP64: u32 = 0x34365544;

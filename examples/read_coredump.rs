@@ -1,6 +1,6 @@
 use log::Level;
 
-use memflow_core::connector::ConnectorArgs;
+use memflow::connector::ConnectorArgs;
 use memflow_win32::*;
 
 use memflow_coredump::create_connector;

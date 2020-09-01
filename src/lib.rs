@@ -4,8 +4,7 @@ use native::*;
 use std::fs::OpenOptions;
 use std::path::Path;
 
-use memflow_core::connector::*;
-use memflow_core::*;
+use memflow::*;
 use memflow_derive::*;
 
 use std::fs::File;
@@ -25,7 +24,7 @@ If neither attempt succeeds the function will fail with an `Error::Conector` err
 ```
 use std::path::PathBuf;
 
-use memflow_core::connector::ConnectorArgs;
+use memflow::connector::ConnectorArgs;
 use memflow_coredump::create_connector;
 
 let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))

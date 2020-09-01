@@ -4,7 +4,7 @@ use std::mem::MaybeUninit;
 
 use dataview::Pod;
 use log::{debug, info};
-use memflow_core::*;
+use memflow::*;
 
 const BMP_SIGNATURE: u32 = 0x504D4446; // 'PMDF'
 const VALID_DUMP: u32 = 0x504D5544; // 'PMUD'

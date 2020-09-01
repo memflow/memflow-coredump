@@ -4,7 +4,7 @@ use std::convert::Into;
 
 use dataview::Pod;
 use log::debug;
-use memflow_core::*;
+use memflow::*;
 use memflow_derive::*;
 
 const SIZE_4KB: u64 = size::kb(4) as u64;
