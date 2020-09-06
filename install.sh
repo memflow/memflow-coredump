@@ -9,10 +9,10 @@ else
 fi
 
 if [ ! -z "$1" ] && [ $1 = "--system" ]; then
-    if [[ ! -d /usr/local/lib/memflow ]]; then
-        sudo mkdir /usr/local/lib/memflow
+    if [[ ! -d /usr/lib/memflow ]]; then
+        sudo mkdir /usr/lib/memflow
     fi
-    sudo cp $FILENAME /usr/local/lib/memflow
+    sudo cp $FILENAME /usr/lib/memflow
 else
     if [[ ! -d ~/.local/lib/memflow ]]; then
         mkdir -p ~/.local/lib/memflow
