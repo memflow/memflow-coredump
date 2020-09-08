@@ -1,6 +1,6 @@
 # memflow-coredump
 
-This connector implements a the Microsoft Windows Coredump format for 32-bit and 64-bit Coredump files. It implements support for full core dumps (type 1) and partial bit mapped core dumps (type 5).
+This connector implements the Microsoft Windows Coredump format for 32-bit and 64-bit Coredump files. It implements support for full core dumps (type 1) and partial bit mapped core dumps (type 5).
 
 ## Compilation
 
