@@ -4,6 +4,12 @@ This connector implements the Microsoft Windows Coredump format for 32-bit and 6
 
 ## Compilation
 
+### Using the install script
+
+The `./install.sh` script will just compile and install the plugin.
+The connector will be installed to `~/.local/lib/memflow` by default.
+Additionally the `--system` flag can be specified which will install the connector in /usr/lib/memflow as well.
+
 ### Using the crate in a rust project
 
 To use the connector in a rust project just include it in your Cargo.toml
@@ -29,6 +35,8 @@ Alternatively to manually placing the library in the `PATH` the connector can be
 It will place it inside `~/.local/lib/memflow` directory. Add `~/.local/lib` directory to `PATH` to use the connector in other memflow projects.
 
 ## Arguments
+
+The following arguments can be used when loading the connector:
 
 - `file` - the path of the coredump file to open (default argument)
 
