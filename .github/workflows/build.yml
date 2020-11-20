@@ -17,27 +17,9 @@ jobs:
 
       - name: Build
         run: cargo build --workspace --verbose
-        if: runner.os != 'Windows'
 
       - name: Build examples
         run: cargo build --workspace --examples --verbose
-        if: runner.os != 'Windows'
-
-      - name: Set up Rust nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-        if: runner.os == 'Windows'
-
-      - name: Build (nightly)
-        run: cargo +nightly build --workspace --all-features --verbose
-        if: runner.os == 'Windows'
-
-      - name: Build examples (nightly)
-        run: cargo +nightly build --workspace --all-features --examples --verbose
-        if: runner.os == 'Windows'
 
   build-arm:
     runs-on: ubuntu-latest
@@ -68,19 +50,6 @@ jobs:
 
       - name: Run all tests
         run: cargo test --workspace --exclude memflow-derive --verbose
-        if: runner.os == 'macOS'
-
-      - name: Set up Rust nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-        if: runner.os == 'Windows'
-
-      - name: Run all tests (nightly)
-        run: cargo +nightly test --workspace --exclude memflow-derive --all-features --verbose
-        if: runner.os == 'Windows'
 
   lint:
     runs-on: ubuntu-latest
