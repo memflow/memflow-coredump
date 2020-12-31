@@ -58,7 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'target/release/*.so'
+          args: '*.so'
       - uses: actions/download-artifact@v2
         with:
           name: library-windows
@@ -67,7 +67,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'target/release/*.dll'
+          args: '*.dll'
       - uses: actions/download-artifact@v2
         with:
           name: library-macos
@@ -76,4 +76,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'target/release/*.dylib'
+          args: '*.dylib'
