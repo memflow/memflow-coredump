@@ -14,10 +14,8 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-
       - name: Build
-        run: cargo build --workspace --verbose
-
+        run: cargo build --workspace --all-features --verbose
       - name: Build examples
         run: cargo build --workspace --examples --verbose
 
@@ -43,11 +41,9 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-
       - name: Run all tests
         run: cargo test --workspace --verbose
         if: runner.os == 'Linux'
-
       - name: Run all tests
         run: cargo test --workspace --exclude memflow-derive --verbose
 
