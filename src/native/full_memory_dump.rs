@@ -2,10 +2,8 @@ use super::*;
 
 use std::convert::Into;
 
-use dataview::Pod;
 use log::debug;
-use memflow::*;
-use memflow_derive::*;
+use memflow::prelude::v1::*;
 
 const SIZE_4KB: u64 = size::kb(4) as u64;
 
@@ -27,13 +25,12 @@ pub struct PhysicalMemoryDescriptor<T: Pod + ByteSwap> {
 pub fn parse_full_dump<T: Pod + ByteSwap + Copy + Into<u64>>(
     descriptor: PhysicalMemoryDescriptor<T>,
     header_size: usize,
-) -> Result<MemoryMap<(Address, usize)>> {
+) -> Result<MemoryMap<(Address, umem)>> {
     let number_of_runs = descriptor.number_of_runs.into();
 
     if number_of_runs > PHYSICAL_MEMORY_MAX_RUNS as u64 {
-        return Err(Error::Connector(
-            "too many memory segments in crash dump file",
-        ));
+        return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("too many memory segments in crash dump file"));
     }
 
     let mut mem_map = MemoryMap::new();
@@ -49,7 +46,7 @@ pub fn parse_full_dump<T: Pod + ByteSwap + Copy + Into<u64>>(
             "adding memory mapping: base={:x} size={:x} real_base={:x}",
             base, size, real_base
         );
-        mem_map.push_remap(base.into(), size as usize, real_base.into());
+        mem_map.push_remap(base.into(), size as umem, real_base.into());
 
         real_base += size;
     }

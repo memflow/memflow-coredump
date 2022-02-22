@@ -2,9 +2,8 @@ use std::fs::File;
 use std::io::Read;
 use std::mem::MaybeUninit;
 
-use dataview::Pod;
 use log::{debug, info};
-use memflow::*;
+use memflow::prelude::v1::*;
 
 const BMP_SIGNATURE: u32 = 0x504D4446; // 'PMDF'
 const VALID_DUMP: u32 = 0x504D5544; // 'PMUD'
@@ -33,18 +32,21 @@ impl BmpHeader {
 
 unsafe impl Pod for BmpHeader {}
 
-pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, usize)>> {
+pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, umem)>> {
     let mut header = BmpHeader::uninit();
 
-    file.read_exact(header.as_bytes_mut())
-        .map_err(|_| Error::Connector("unable to read bitmap header"))?;
+    file.read_exact(header.as_bytes_mut()).map_err(|_| {
+        Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("unable to read bitmap header")
+    })?;
 
     if header.signature != BMP_SIGNATURE {
-        return Err(Error::Connector("BitMap header signature is not valid"));
+        return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("BitMap header signature is not valid"));
     }
 
     if header.valid_dump != VALID_DUMP {
-        return Err(Error::Connector("BitMap header dump flag is not valid"));
+        return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("BitMap header dump flag is not valid"));
     }
 
     info!(
@@ -60,7 +62,9 @@ pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, usize)>>
     bitmap.resize(header.pages as usize / BITS_PER_VAL + 1, 0);
 
     file.read_exact(&mut bitmap.as_bytes_mut()[..((header.pages as usize + 7) / 8)])
-        .map_err(|_| Error::Connector("unable to read the bitmap"))?;
+        .map_err(|_| {
+            Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("unable to read the bitmap")
+        })?;
 
     let mut reg_accum_bit = 0usize;
     let mut reg_start_bit = 0usize;
@@ -103,7 +107,7 @@ pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, usize)>>
                             base, size, remap_base
                         );
 
-                        mem_map.push_remap(base.into(), size, remap_base);
+                        mem_map.push_remap(base.into(), size as umem, remap_base);
                         reg_accum_bit = accum_bits;
                     }
 

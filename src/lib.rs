@@ -4,8 +4,7 @@ use native::*;
 use std::fs::OpenOptions;
 use std::path::Path;
 
-use memflow::*;
-use memflow_derive::*;
+use memflow::prelude::v1::*;
 
 use std::fs::File;
 
@@ -44,12 +43,15 @@ pub type CoreDump<'a> = FileIOMemory<File>;
 ///
 /// This function will return the underlying file and the memory map with correct file offsets.
 /// These arguments can then be passed to the mmap or read connector for Read/Write operations.
-pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<(MemoryMap<(Address, usize)>, File)> {
+pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<(MemoryMap<(Address, umem)>, File)> {
     let mut file = OpenOptions::new()
         .read(true)
         .write(false)
         .open(path)
-        .map_err(|_| Error::Connector("unable to open coredump file"))?;
+        .map_err(|_| {
+            Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+                .log_error("unable to open coredump file")
+        })?;
 
     let mem_map = parse_coredump64(&mut file).or_else(|_| parse_coredump32(&mut file))?;
 
@@ -62,14 +64,12 @@ pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<(MemoryMap<(Address, usize)
 /// The type of connector depends on the feature flags of the crate.
 #[connector(name = "coredump")]
 pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
-    let (map, file) = parse_file(
-        args.get("file")
-            .or_else(|| args.get_default())
-            .ok_or_else(|| Error::Connector("no path specified"))?,
-    )?;
+    let (map, file) = parse_file(args.target.as_deref().ok_or_else(|| {
+        Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("no path specified")
+    })?)?;
     #[cfg(feature = "filemap")]
     {
-        Ok(MMAPInfo::try_with_filemap(file, map)?.into_connector())
+        Ok(MmapInfo::try_with_filemap(file, map)?.into_connector())
     }
     #[cfg(not(feature = "filemap"))]
     {

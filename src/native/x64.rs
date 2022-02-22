@@ -6,10 +6,8 @@ use std::io::{Read, Seek, SeekFrom};
 use std::mem::size_of;
 use std::mem::MaybeUninit;
 
-use dataview::Pod;
 use log::info;
-use memflow::*;
-use memflow_derive::*;
+use memflow::prelude::v1::*;
 
 pub const DUMP_VALID_DUMP64: u32 = 0x34365544;
 pub const IMAGE_FILE_MACHINE_AMD64: u32 = 0x8664;
@@ -66,29 +64,36 @@ impl CoreDumpHeader64 {
 unsafe impl Pod for CoreDumpHeader64 {}
 
 /// Tries to parse a file handle as a Microsoft Windows 64bit Coredump.
-pub fn parse_coredump64(file: &mut File) -> Result<MemoryMap<(Address, usize)>> {
+pub fn parse_coredump64(file: &mut File) -> Result<MemoryMap<(Address, umem)>> {
     let mut header = CoreDumpHeader64::uninit();
 
-    file.seek(SeekFrom::Start(0))
-        .map_err(|_| Error::Connector("unable to seek to coredump 64 header"))?;
+    file.seek(SeekFrom::Start(0)).map_err(|_| {
+        Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("unable to seek to coredump 64 header")
+    })?;
 
-    file.read_exact(header.as_bytes_mut())
-        .map_err(|_| Error::Connector("unable to read coredump 64 header"))?;
+    file.read_exact(header.as_bytes_mut()).map_err(|_| {
+        Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("unable to read coredump 64 header")
+    })?;
 
     if cfg!(target_endian = "big") {
         header.byte_swap();
     }
 
     if header.signature != DUMP_SIGNATURE {
-        return Err(Error::Connector("header signature is not valid"));
+        return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("header signature is not valid"));
     }
 
     if header.valid_dump != DUMP_VALID_DUMP64 {
-        return Err(Error::Connector("header dump flag is not valid"));
+        return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("header dump flag is not valid"));
     }
 
     if header.machine_image_type != IMAGE_FILE_MACHINE_AMD64 {
-        return Err(Error::Connector("invalid machine image type"));
+        return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("invalid machine image type"));
     }
 
     info!("64-bit Microsoft Crash Dump verified");
@@ -99,9 +104,8 @@ pub fn parse_coredump64(file: &mut File) -> Result<MemoryMap<(Address, usize)>> 
             size_of::<CoreDumpHeader64>(),
         ),
         dump_type::BIT_MAP => bitmap_dump::parse_bitmap_dump(file),
-        _ => Err(Error::Connector(
-            "invalid dump type, only full and bitmap dumps are supported",
-        )),
+        _ => Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
+            .log_error("invalid dump type, only full and bitmap dumps are supported")),
     }
 }
 
