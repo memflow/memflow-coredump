@@ -16,17 +16,18 @@ pub const IMAGE_FILE_MACHINE_AMD64: u32 = 0x8664;
 #[repr(C)]
 #[derive(Copy, Clone, ByteSwap)]
 pub struct CoreDumpHeader64 {
-    pub signature: u32,                                       // 0x0000
-    pub valid_dump: u32,                                      // 0x0004
-    pub major_version: u32,                                   // 0x0008
-    pub minor_version: u32,                                   // 0x000c
-    pub directory_table_base: u64,                            // 0x0010
-    pub pfn_data_base: u64,                                   // 0x0018
-    pub ps_loaded_module_list: u64,                           // 0x0020
-    pub ps_active_process_head: u64,                          // 0x0028
-    pub machine_image_type: u32,                              // 0x0030
-    pub number_processors: u32,                               // 0x0034
-    pub bug_check_code: u32,                                  // 0x0038
+    pub signature: u32,              // 0x0000
+    pub valid_dump: u32,             // 0x0004
+    pub major_version: u32,          // 0x0008
+    pub minor_version: u32,          // 0x000c
+    pub directory_table_base: u64,   // 0x0010
+    pub pfn_data_base: u64,          // 0x0018
+    pub ps_loaded_module_list: u64,  // 0x0020
+    pub ps_active_process_head: u64, // 0x0028
+    pub machine_image_type: u32,     // 0x0030
+    pub number_processors: u32,      // 0x0034
+    pub bug_check_code: u32,         // 0x0038
+    __: u32,
     pub bug_check_parameter1: u64,                            // 0x0040
     pub bug_check_parameter2: u64,                            // 0x0048
     pub bug_check_parameter3: u64,                            // 0x0050
@@ -38,19 +39,20 @@ pub struct CoreDumpHeader64 {
     pub context_record: [u8; 3000],                           // 0x0348
     pub exception_record: [u8; 152],                          // EXCEPTION_RECORD64 - 0x0F00
     pub dump_type: u32,                                       // 0x0F98
-    pub required_dump_space: u64,                             // 0x0FA0
-    pub system_time: u64,                                     // 0x0FA8
-    pub comment: [i8; 0x80],                                  // 0x0FB0 May not be present.
-    pub system_up_time: u64,                                  // 0x1030
-    pub mini_dump_fields: u32,                                // 0x1038
-    pub secondary_data_state: u32,                            // 0x103c
-    pub product_type: u32,                                    // 0x1040
-    pub suite_mask: u32,                                      // 0x1044
-    pub writer_status: u32,                                   // 0x1048
-    pub unused0: u8,                                          // 0x104c
-    pub kd_secondary_version: u8,                             // 0x104d only on W2K3 SP1 and up
-    pub unused1: [u8; 2],                                     // 0x104e
-    pub reserved0: [u8; 4016],                                // 0x1050
+    ___: u32,
+    pub required_dump_space: u64,  // 0x0FA0
+    pub system_time: u64,          // 0x0FA8
+    pub comment: [i8; 0x80],       // 0x0FB0 May not be present.
+    pub system_up_time: u64,       // 0x1030
+    pub mini_dump_fields: u32,     // 0x1038
+    pub secondary_data_state: u32, // 0x103c
+    pub product_type: u32,         // 0x1040
+    pub suite_mask: u32,           // 0x1044
+    pub writer_status: u32,        // 0x1048
+    pub unused0: u8,               // 0x104c
+    pub kd_secondary_version: u8,  // 0x104d only on W2K3 SP1 and up
+    pub unused1: [u8; 2],          // 0x104e
+    pub reserved0: [u8; 4016],     // 0x1050
 }
 const _: [(); std::mem::size_of::<CoreDumpHeader64>()] = [(); 0x2000];
 
