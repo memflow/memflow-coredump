@@ -101,7 +101,7 @@ pub fn parse_coredump32(file: &mut File) -> Result<MemoryMap<(Address, umem)>> {
     info!("32-bit Microsoft Crash Dump verified");
 
     match header.dump_type {
-        dump_type::FULL => full_memory_dump::parse_full_dump(
+        dump_type::FULL | DUMP_SIGNATURE => full_memory_dump::parse_full_dump(
             header.physical_memory_block,
             size_of::<CoreDumpHeader32>(),
         ),
