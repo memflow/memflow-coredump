@@ -18,7 +18,28 @@ jobs:
         run: cargo build --release --workspace --all-features --verbose
       - uses: actions/upload-artifact@v2
         with:
-          name: library-ubuntu
+          name: library-ubuntu-x86-64
+          path: target/release/*.so
+
+  build_ubuntu_aarch64:
+    name: Build artifacts for ubuntu-latest (aarch64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-unknown-linux-gnu
+          override: true
+      - name: Build artifacts
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target aarch64-unknown-linux-gnu --release --workspace --all-features --verbose
+      - uses: actions/upload-artifact@v2
+        with:
+          name: library-ubuntu-aarch64
           path: target/release/*.so
 
   build_windows_x86-64:
@@ -30,7 +51,7 @@ jobs:
         run: cargo build --release --workspace --all-features --verbose
       - uses: actions/upload-artifact@v2
         with:
-          name: library-windows
+          name: library-windows-x86-64
           path: target/release/*.dll
 
   build_macos_x86-64:
@@ -42,35 +63,51 @@ jobs:
         run: cargo build --release --workspace --all-features --verbose
       - uses: actions/upload-artifact@v2
         with:
-          name: library-macos
+          name: library-macos-x86-64
           path: target/release/*.dylib
 
   publish_artifacts:
-    name: Publish artifacts for x86-64/windows-latest
+    name: Publish artifacts
     runs-on: ubuntu-latest
     needs: [build_ubuntu_x86-64, build_windows_x86-64, build_macos_x86-64]
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: library-ubuntu
-      - name: Upload ubuntu artifacts
+          name: library-ubuntu-x86-64
+      - name: Create archive for linux x86-64
+        run: zip memflow_coredump_linux_x86-64.zip *.so
+      - name: Upload artifacts for linux x86-64
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: '*.so'
+          args: 'memflow_coredump_linux_x86-64.zip'
+
       - uses: actions/download-artifact@v2
         with:
-          name: library-windows
+          name: library-ubuntu-aarch64
+      - name: Create archive for linux aarch64
+        run: zip memflow_coredump_linux_aarch64.zip *.so
+      - name: Upload artifacts for linux aarch64
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'memflow_coredump_linux_aarch64.zip'
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: library-windows-x86-64
       - name: Upload windows artifacts
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: '*.dll'
+
       - uses: actions/download-artifact@v2
         with:
-          name: library-macos
+          name: library-macos-x86-64
       - name: Upload macos artifacts
         uses: skx/github-action-publish-binaries@master
         env:

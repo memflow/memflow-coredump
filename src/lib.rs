@@ -1,12 +1,11 @@
 mod native;
 use native::*;
 
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
 use std::path::Path;
 
+use memflow::cglue;
 use memflow::prelude::v1::*;
-
-use std::fs::File;
 
 /**
 The `parse_file` function reads and parses Microsoft Windows Coredump files.
@@ -23,12 +22,12 @@ If neither attempt succeeds the function will fail with an `Error::Conector` err
 ```
 use std::path::PathBuf;
 
-use memflow::connector::ConnectorArgs;
+use memflow::plugins::ConnectorArgs;
 use memflow_coredump::create_connector;
 
 let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
     .join("resources/test/coredump_win10_64bit_stripped.raw");
-if let Ok(mut mem) = create_connector(&ConnectorArgs::with_default(path.to_str().unwrap())) {
+if let Ok(mut mem) = create_connector(&str::parse(path.to_str().unwrap()).expect("unable to parse command line arguments")) {
     println!("Coredump connector initialized");
 }
 ```
