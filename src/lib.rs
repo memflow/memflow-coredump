@@ -61,10 +61,10 @@ pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<(MemoryMap<(Address, umem)>
 ///
 /// This function will return a connector reading the underlying data of the core dump.
 /// The type of connector depends on the feature flags of the crate.
-#[connector(name = "coredump")]
+#[connector(name = "coredump", help_fn = "help")]
 pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
     let (map, file) = parse_file(args.target.as_deref().ok_or_else(|| {
-        Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("no path specified")
+        Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("`file` argument missing")
     })?)?;
     #[cfg(feature = "filemap")]
     {
@@ -74,6 +74,18 @@ pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
     {
         Ok(CoreDump::try_with_reader(file, map)?.into_connector())
     }
+}
+
+/// Retrieve the help text for the Qemu Procfs Connector.
+pub fn help() -> String {
+    format!(
+        "\
+The `coredump` connector implements the Microsoft Windows Coredump format
+for 32-bit and 64-bit Coredump files. It implements support for
+full core dumps (type 1) and partial bit mapped core dumps (type 5).
+
+The `target` argument specifies the filename of the coredump file to be opened."
+    )
 }
 
 #[cfg(test)]

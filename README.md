@@ -1,44 +1,34 @@
 # memflow-coredump
 
-This connector implements the Microsoft Windows Coredump format for 32-bit and 64-bit Coredump files. It implements support for full core dumps (type 1) and partial bit mapped core dumps (type 5).
+The `coredump` connector implements the Microsoft Windows Coredump format for 32-bit and 64-bit Coredump files. It implements support for full core dumps (type 1) and partial bit mapped core dumps (type 5).
 
 ## Compilation
 
-### Using the install script
+### Installing the library
 
-The `./install.sh` script will just compile and install the plugin.
-The connector will be installed to `~/.local/lib/memflow` by default.
-Additionally the `--system` flag can be specified which will install the connector in /usr/lib/memflow as well.
+The recommended way to install memflow connectors is using [memflowup](https://github.com/memflow/memflowup#memflow-setup-tool).
 
-### Using the crate in a rust project
+### Development builds
+
+To compile the connector as dynamic library to be used with the memflow plugin system use the following command:
+
+```
+cargo build --release --all-features
+```
+
+The plugin can then be found in the `target/release/` directory and has to be copied to one of [memflows default search paths](https://github.com/memflow/memflow/blob/main/memflow/src/plugins/mod.rs#L379).
+
+### Linking the crate statically in a rust project
 
 To use the connector in a rust project just include it in your Cargo.toml
 
 ```
-memflow-coredump = "0.1"
+memflow-coredump = "^0.2.0-beta"
 ```
-
-Make sure to not enable the `inventory` feature when importing multiple
-connectors in a rust project without using the memflow connector inventory.
-This might cause duplicated exports being generated in your project.
-
-### Building the stand-alone connector for dynamic loading
-
-The stand-alone connector of this library is feature-gated behind the `inventory` feature.
-To compile a dynamic library for use with the connector inventory use the following command:
-
-```cargo build --release --all-features```
-
-### Installing the library
-
-Alternatively to manually placing the library in the `PATH` the connector can be installed with the `install.sh` script.
-It will place it inside `~/.local/lib/memflow` directory. Add `~/.local/lib` directory to `PATH` to use the connector in other memflow projects.
 
 ## Arguments
 
-The following arguments can be used when loading the connector:
-
-- `file` - the path of the coredump file to open (default argument)
+The `target` argument specifies the filename of the coredump file to be opened.
 
 ## License
 
