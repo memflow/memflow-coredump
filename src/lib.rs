@@ -4,7 +4,6 @@ use native::*;
 use std::fs::{File, OpenOptions};
 use std::path::Path;
 
-use memflow::cglue;
 use memflow::prelude::v1::*;
 
 /**
@@ -61,7 +60,7 @@ pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<(MemoryMap<(Address, umem)>
 ///
 /// This function will return a connector reading the underlying data of the core dump.
 /// The type of connector depends on the feature flags of the crate.
-#[connector(name = "coredump", help_fn = "help")]
+#[connector(name = "coredump", help_fn = "help", no_default_cache = true)]
 pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
     let (map, file) = parse_file(args.target.as_deref().ok_or_else(|| {
         Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("`file` argument missing")
