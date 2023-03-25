@@ -1,14 +1,15 @@
 use std::fs::File;
 use std::io::Read;
-use std::mem::MaybeUninit;
 
 use log::{debug, info};
 use memflow::prelude::v1::*;
 
+use crate::native::file_read_raw_struct;
+
 const BMP_SIGNATURE: u32 = 0x504D4446; // 'PMDF'
 const VALID_DUMP: u32 = 0x504D5544; // 'PMUD'
 
-const SIZE_4KB: usize = size::kb(4) as usize;
+const SIZE_4KB: usize = size::kb(4);
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -23,21 +24,10 @@ pub struct BmpHeader {
     pub pages: u64,
 }
 
-#[allow(clippy::uninit_assumed_init)]
-impl BmpHeader {
-    pub fn uninit() -> Self {
-        unsafe { MaybeUninit::uninit().assume_init() }
-    }
-}
-
 unsafe impl Pod for BmpHeader {}
 
 pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, umem)>> {
-    let mut header = BmpHeader::uninit();
-
-    file.read_exact(header.as_bytes_mut()).map_err(|_| {
-        Error(ErrorOrigin::Connector, ErrorKind::Unknown).log_error("unable to read bitmap header")
-    })?;
+    let header: BmpHeader = unsafe { file_read_raw_struct(file) }?;
 
     if header.signature != BMP_SIGNATURE {
         return Err(Error(ErrorOrigin::Connector, ErrorKind::Unknown)
@@ -98,9 +88,9 @@ pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, umem)>> 
                     temp = temp.wrapping_shr(zeros as u32);
 
                     if reg_accum_bit != accum_bits {
-                        let base = reg_start_bit as usize * SIZE_4KB;
-                        let remap_base = real_base + reg_accum_bit as usize * SIZE_4KB;
-                        let size = (accum_bits - reg_accum_bit) as usize * SIZE_4KB;
+                        let base = reg_start_bit * SIZE_4KB;
+                        let remap_base = real_base + reg_accum_bit * SIZE_4KB;
+                        let size = (accum_bits - reg_accum_bit) * SIZE_4KB;
 
                         debug!(
                             "adding memory mapping: base={:x} size={:x} real_base={:x}",

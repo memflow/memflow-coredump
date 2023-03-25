@@ -77,14 +77,13 @@ pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
 
 /// Retrieve the help text for the Qemu Procfs Connector.
 pub fn help() -> String {
-    format!(
-        "\
+    "\
 The `coredump` connector implements the Microsoft Windows Coredump format
 for 32-bit and 64-bit Coredump files. It implements support for
 full core dumps (type 1) and partial bit mapped core dumps (type 5).
 
 The `target` argument specifies the filename of the coredump file to be opened."
-    )
+        .to_owned()
 }
 
 #[cfg(test)]

@@ -2,9 +2,8 @@ use super::full_memory_dump::*;
 use super::*;
 
 use std::fs::File;
-use std::io::{Read, Seek, SeekFrom};
+use std::io::Seek;
 use std::mem::size_of;
-use std::mem::MaybeUninit;
 
 use log::info;
 use memflow::prelude::v1::*;
@@ -56,28 +55,16 @@ pub struct CoreDumpHeader32 {
 }
 const _: [(); std::mem::size_of::<CoreDumpHeader32>()] = [(); 0x1000];
 
-#[allow(clippy::uninit_assumed_init)]
-impl CoreDumpHeader32 {
-    pub fn uninit() -> Self {
-        unsafe { MaybeUninit::uninit().assume_init() }
-    }
-}
-
 unsafe impl Pod for CoreDumpHeader32 {}
 
 /// Tries to parse a file handle as a Microsoft Windows 32bit Coredump.
 pub fn parse_coredump32(file: &mut File) -> Result<MemoryMap<(Address, umem)>> {
-    let mut header = CoreDumpHeader32::uninit();
-
-    file.seek(SeekFrom::Start(0)).map_err(|_| {
+    file.rewind().map_err(|_| {
         Error(ErrorOrigin::Connector, ErrorKind::Unknown)
             .log_error("unable to seek to coredump 64 header")
     })?;
 
-    file.read_exact(header.as_bytes_mut()).map_err(|_| {
-        Error(ErrorOrigin::Connector, ErrorKind::Unknown)
-            .log_error("unable to read coredump 32 header")
-    })?;
+    let mut header: CoreDumpHeader32 = unsafe { file_read_raw_struct(file) }?;
 
     if cfg!(target_endian = "big") {
         header.byte_swap();
@@ -125,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_struct_members_x86() {
-        let header = CoreDumpHeader32::uninit();
+        let header: CoreDumpHeader32 = unsafe { std::mem::transmute([0u8; 0x1000]) };
         assert_eq!(
             &header.version_user as *const _ as usize - &header as *const _ as usize,
             0x3c
