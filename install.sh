@@ -10,11 +10,11 @@ fi
 
 # install connector to system dir
 if [ ! -z "$1" ] && [ $1 = "--system" ]; then
-    echo "installing connector system-wide in /usr/lib/memflow"
-    if [[ ! -d /usr/lib/memflow ]]; then
-        sudo mkdir /usr/lib/memflow
+    echo "installing connector system-wide in /usr/local/lib/memflow"
+    if [[ ! -d /usr/local/lib/memflow ]]; then
+        sudo mkdir /usr/local/lib/memflow
     fi
-    sudo cp $FILENAME /usr/lib/memflow
+    sudo cp $FILENAME /usr/local/lib/memflow
 fi
 
 # install connector in user dir
