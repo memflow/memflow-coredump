@@ -47,9 +47,8 @@ pub fn parse_bitmap_dump(file: &mut File) -> Result<MemoryMap<(Address, umem)>> 
     type BType = u128;
     const BITS_PER_VAL: usize = std::mem::size_of::<BType>() * 8;
 
-    let mut bitmap: Vec<BType> = vec![];
     // Add an additional elem so that the final reg gets pushed
-    bitmap.resize(header.pages as usize / BITS_PER_VAL + 1, 0);
+    let mut bitmap = vec![0; header.pages as usize / BITS_PER_VAL + 1];
 
     file.read_exact(&mut bitmap.as_bytes_mut()[..((header.pages as usize + 7) / 8)])
         .map_err(|_| {
