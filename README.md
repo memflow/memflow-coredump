@@ -6,7 +6,7 @@ The `coredump` connector implements the Microsoft Windows Coredump format for 32
 
 ### Installing the library
 
-The recommended way to install memflow connectors is using [memflowup](https://github.com/memflow/memflowup#memflow-setup-tool).
+The recommended way to install memflow connectors is using [memflowup](https://github.com/memflow/memflowup#memflowup---memflow-setup-tool).
 
 ### Development builds
 
@@ -23,7 +23,7 @@ The plugin can then be found in the `target/release/` directory and has to be co
 To use the connector in a rust project just include it in your Cargo.toml
 
 ```
-memflow-coredump = "^0.2.0-beta"
+memflow-coredump = "=0.2.0-beta11"
 ```
 
 ## Arguments
