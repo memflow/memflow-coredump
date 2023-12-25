@@ -1,6 +1,6 @@
 [package]
 name = "memflow-coredump"
-version = "0.2.0-beta11"
+version = "0.2.0"
 authors = ["ko1N <ko1N1337@gmail.com>", "Aurimas Blažulionis <0x60@pm.me>"]
 edition = "2021"
 description = "win32 coredump connector for the memflow physical memory introspection framework"
@@ -16,12 +16,12 @@ categories = [ "api-bindings", "memory-management", "os" ]
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-memflow = { version = "=0.2.0-beta11", features = ["plugins", "filemap"] }
+memflow = { version = "0.2", features = ["plugins", "filemap"] }
 log = { version = "0.4", default-features = false }
 
 [dev-dependencies]
 simplelog = "0.12"
-memflow-win32 = { version = "=0.2.0-beta11" }
+memflow-win32 = { version = "0.2" }
 
 [profile.release]
 lto = true
