@@ -33,17 +33,14 @@ jobs:
             os: ubuntu-20.04
             target: i686-unknown-linux-gnu
             extension: "*.so"
-            skip_tests: true
           - os_name: windows-aarch64
             os: windows-latest
             target: aarch64-pc-windows-msvc
             extension: "*.dll"
-            skip_tests: true
           - os_name: windows-i686
             os: windows-latest
             target: i686-pc-windows-msvc
             extension: "*.dll"
-            skip_tests: true
           - os_name: windows-x86_64
             os: windows-latest
             target: x86_64-pc-windows-msvc
@@ -56,39 +53,20 @@ jobs:
             os: macOS-latest
             target: aarch64-apple-darwin
             extension: "*.dylib"
-            skip_tests: true
         toolchain:
           - stable
     steps:
       - uses: actions/checkout@v4
       - name: Cache cargo & target directories
         uses: Swatinem/rust-cache@v2
-      - name: Build binary
-        uses: houseabsolute/actions-rust-cross@v0
-        with:
-          command: "build"
-          target: ${{ matrix.platform.target }}
-          toolchain: ${{ matrix.toolchain }}
-          args: "--locked --release"
-          strip: true
-      - name: Run tests
-        uses: houseabsolute/actions-rust-cross@v0
-        with:
-          command: "test"
-          target: ${{ matrix.platform.target }}
-          toolchain: ${{ matrix.toolchain }}
-          args: "--locked --release"
-        if: ${{ !matrix.platform.skip_tests }}
 
       - name: Install memflowup
         run: cargo install --git https://github.com/memflow/memflowup
-      - run: echo "${{ secrets.MEMFLOW_REGISTRY_SIGNING_KEY}}" > ec-secp256k1-priv-key.pem
-      - name: Upload plugin (linux)
-        run: memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.so
-        if: matrix.platform.os == 'ubuntu-20.04'
-      - name: Upload plugin (windows)
-        run: memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.dll
-        if: matrix.platform.os == 'windows-latest'
-      - name: Upload plugin (mac)
-        run: memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.dylib
-        if: matrix.platform.os == 'macOS-latest'
+
+      - name: Build and install plugin locally
+        run: memflowup --skip-version-check build --path .
+
+      - name: Upload locally installed plugin
+        run: |
+          echo "${{ secrets.MEMFLOW_REGISTRY_SIGNING_KEY}}" > ec-secp256k1-priv-key.pem
+          memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem coredump:latest
