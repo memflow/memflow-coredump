@@ -35,7 +35,7 @@ if let Ok(mut mem) = create_connector(&str::parse(path.to_str().unwrap()).expect
 #[cfg(feature = "filemap")]
 pub type CoreDump<'a> = ReadMappedFilePhysicalMemory<'a>;
 #[cfg(not(feature = "filemap"))]
-pub type CoreDump<'a> = FileIOMemory<File>;
+pub type CoreDump<'a> = FileIoMemory<File>;
 
 /// Opens a Microsoft Windows Coredump
 ///
