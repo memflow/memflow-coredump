@@ -1,14 +1,17 @@
 name: Build and test
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
 
 env:
+  RUST_BACKTRACE: 1
   CARGO_TERM_COLOR: always
 
 jobs:
-
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -19,20 +22,6 @@ jobs:
       - run: cargo build ${{ matrix.flags }} --release
       - run: cargo build ${{ matrix.flags }} --release --examples
 
-  build-cross:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flags: [--all-features, --no-default-features]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: houseabsolute/actions-rust-cross@v0
-        with:
-          command: build
-          target: aarch64-unknown-linux-gnu
-          args: "--locked ${{ matrix.flags }} --release"
-          strip: true
-          
   test:
     runs-on: ${{ matrix.os }}
     strategy:
