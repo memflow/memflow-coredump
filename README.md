@@ -23,7 +23,7 @@ The plugin can then be found in the `target/release/` directory and has to be co
 To use the connector in a rust project just include it in your Cargo.toml
 
 ```
-memflow-coredump = "=0.2.0-beta11"
+memflow-coredump = "0.2"
 ```
 
 ## Arguments
