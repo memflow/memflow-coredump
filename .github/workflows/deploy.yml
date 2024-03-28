@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_linux_x86_64]
     steps:
-      - run: cargo install https://github.com/memflow/memflowup
+      - run: cargo install --git https://github.com/memflow/memflowup
       - run: echo "${{ secrets.MEMFLOW_REGISTRY_SIGNING_KEY}}" > ec-secp256k1-priv-key.pem
 
       - uses: actions/download-artifact@v4

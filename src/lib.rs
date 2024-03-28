@@ -35,7 +35,7 @@ if let Ok(mut mem) = create_connector(&str::parse(path.to_str().unwrap()).expect
 #[cfg(feature = "filemap")]
 pub type CoreDump<'a> = ReadMappedFilePhysicalMemory<'a>;
 #[cfg(not(feature = "filemap"))]
-pub type CoreDump<'a> = FileIoMemory<File>;
+pub type CoreDump<'a> = FileIoMemory<CloneFile>;
 
 /// Opens a Microsoft Windows Coredump
 ///
@@ -71,7 +71,7 @@ pub fn create_connector<'a>(args: &ConnectorArgs) -> Result<CoreDump<'a>> {
     }
     #[cfg(not(feature = "filemap"))]
     {
-        Ok(CoreDump::try_with_reader(file, map)?.into_connector())
+        Ok(CoreDump::with_mem_map(file.into(), map)?)
     }
 }
 
