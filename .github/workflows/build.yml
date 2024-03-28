@@ -26,11 +26,12 @@ jobs:
         flags: [--all-features, --no-default-features]
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+        uses: houseabsolute/actions-rust-cross@v0
         with:
-          toolchain: stable
-          targets: aarch64-unknown-linux-gnu
-      - run: cargo build --target aarch64-unknown-linux-gnu ${{ matrix.flags }} --release
+          command: build
+          target: aarch64-unknown-linux-gnu
+          args: "--locked ${{ matrix.flags }} --release"
+          strip: true
           
   test:
     runs-on: ${{ matrix.os }}
