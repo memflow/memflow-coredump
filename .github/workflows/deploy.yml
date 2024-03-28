@@ -83,12 +83,12 @@ jobs:
       - name: Install memflowup
         run: cargo install --git https://github.com/memflow/memflowup
       - run: echo "${{ secrets.MEMFLOW_REGISTRY_SIGNING_KEY}}" > ec-secp256k1-priv-key.pem
-      - name: Upload plugin
-        run: |
-          if [[ "${{ matrix.platform.os }}" == "windows-latest" ]]; then
-            memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.dll
-          elif [[  "${{ matrix.platform.os }}" == "macOS-latest" ]]; then
-            memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.dylib
-          else
-            memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.so
-          fi
+      - name: Upload plugin (linux)
+        run: memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.so
+        if: matrix.platform.os == 'ubuntu-20.04'
+      - name: Upload plugin (windows)
+        run: memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.dll
+        if: matrix.platform.os == 'windows-latest'
+      - name: Upload plugin (mac)
+        run: memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem target/${{ matrix.platform.target }}/release/*.dylib
+        if: matrix.platform.os == 'macOS-latest'
