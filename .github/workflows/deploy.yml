@@ -17,34 +17,34 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - os_name: Linux-x86_64
+          - os_name: linux-x86_64
             os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             extension: "*.so"
-          - os_name: Linux-aarch64
+          - os_name: linux-aarch64
             os: ubuntu-20.04
             target: aarch64-unknown-linux-gnu
             extension: "*.so"
-          - os_name: Linux-arm
+          - os_name: linux-arm
             os: ubuntu-20.04
             target: arm-unknown-linux-gnueabi
             extension: "*.so"
-          - os_name: Linux-i686
+          - os_name: linux-i686
             os: ubuntu-20.04
             target: i686-unknown-linux-gnu
             extension: "*.so"
             skip_tests: true
-          - os_name: Windows-aarch64
+          - os_name: windows-aarch64
             os: windows-latest
             target: aarch64-pc-windows-msvc
             extension: "*.dll"
             skip_tests: true
-          - os_name: Windows-i686
+          - os_name: windows-i686
             os: windows-latest
             target: i686-pc-windows-msvc
             extension: "*.dll"
             skip_tests: true
-          - os_name: Windows-x86_64
+          - os_name: windows-x86_64
             os: windows-latest
             target: x86_64-pc-windows-msvc
             extension: "*.dll"
@@ -56,6 +56,7 @@ jobs:
             os: macOS-latest
             target: aarch64-apple-darwin
             extension: "*.dylib"
+            skip_tests: true
         toolchain:
           - stable
     steps:
@@ -85,4 +86,4 @@ jobs:
       - name: Upload plugin
         run: |
           cd target/${{ matrix.platform.target }}/release
-          memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem ${{ matrix.extension }}
+          memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem *(.so|.dll|.dylib)
