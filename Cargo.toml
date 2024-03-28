@@ -20,7 +20,7 @@ memflow = { version = "0.2", features = ["plugins", "filemap"] }
 log = { version = "0.4", default-features = false }
 
 [dev-dependencies]
-simplelog = "0.12"
+env_logger = "0.11"
 memflow-win32 = { version = "0.2" }
 
 [profile.release]

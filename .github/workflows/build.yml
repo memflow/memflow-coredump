@@ -26,7 +26,7 @@ jobs:
         flags: [--all-features, --no-default-features]
     steps:
       - uses: actions/checkout@v4
-        uses: houseabsolute/actions-rust-cross@v0
+      - uses: houseabsolute/actions-rust-cross@v0
         with:
           command: build
           target: aarch64-unknown-linux-gnu
