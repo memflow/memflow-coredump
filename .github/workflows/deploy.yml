@@ -20,42 +20,42 @@ jobs:
           - os_name: Linux-x86_64
             os: ubuntu-20.04
             target: x86_64-unknown-linux-musl
-            extension: *.so
+            extension: "*.so"
           - os_name: Linux-aarch64
             os: ubuntu-20.04
             target: aarch64-unknown-linux-musl
-            extension: *.so
+            extension: "*.so"
           - os_name: Linux-arm
             os: ubuntu-20.04
             target: arm-unknown-linux-musleabi
-            extension: *.so
+            extension: "*.so"
           - os_name: Linux-i686
             os: ubuntu-20.04
             target: i686-unknown-linux-musl
-            extension: *.so
+            extension: "*.so"
             skip_tests: true
           - os_name: Windows-aarch64
             os: windows-latest
             target: aarch64-pc-windows-msvc
-            extension: *.dll
+            extension: "*.dll"
             skip_tests: true
           - os_name: Windows-i686
             os: windows-latest
             target: i686-pc-windows-msvc
-            extension: *.dll
+            extension: "*.dll"
             skip_tests: true
           - os_name: Windows-x86_64
             os: windows-latest
             target: x86_64-pc-windows-msvc
-            extension: *.dll
+            extension: "*.dll"
           - os_name: macOS-x86_64
             os: macOS-latest
             target: x86_64-apple-darwin
-            extension: *.dylib
+            extension: "*.dylib"
           - os_name: macOS-aarch64
             os: macOS-latest
             target: aarch64-apple-darwin
-            extension: *.dylib
+            extension: "*.dylib"
         toolchain:
           - stable
     steps:
