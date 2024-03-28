@@ -86,4 +86,4 @@ jobs:
       - name: Upload plugin
         run: |
           cd target/${{ matrix.platform.target }}/release
-          memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem $(ls *{.so,.dll,.dylib})
+          memflowup --skip-version-check push --token ${{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem $(find . -maxdepth 1 -name '*.so' -o -name '*.dll' -o -name '*.dylib')
