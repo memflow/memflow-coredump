@@ -27,9 +27,9 @@ memflow-win32 = { version = "0.2" }
 lto = true
 
 [features]
-default = ["filemap"]
-inventory = []
-filemap = []
+default = ["filemap", "plugins"]
+plugins = ["memflow/plugins"]
+filemap = ["memflow/filemap"]
 
 [[example]]
 name = "read_phys"

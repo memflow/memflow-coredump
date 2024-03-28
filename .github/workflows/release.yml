@@ -1,131 +1,32 @@
-name: Release binaries
+name: Deploy to memflow registry
 
-on:
-  release:
-    types: [created]
+on: [push]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
 
-  build_ubuntu_x86-64:
+  build_linux_x86_64:
     name: Build artifacts for ubuntu-latest (x86-64)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install rust 1.70.0
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.70.0
-          override: true
-      - name: Build artifacts
-        run: cargo build --release --workspace --all-features --verbose
-      - uses: actions/upload-artifact@v2
+      - uses: actions/checkout@v4
+      - run: cargo build --release --all-features
+      - uses: actions/upload-artifact@v4
         with:
           name: library-ubuntu-x86-64
           path: target/release/*.so
 
-  build_ubuntu_aarch64:
-    name: Build artifacts for ubuntu-latest (aarch64)
+  deploy_plugins:
+    name: Deploy plugins
     runs-on: ubuntu-latest
+    needs: [build_linux_x86_64]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.70.0
-          target: aarch64-unknown-linux-gnu
-          override: true
-      - name: Build artifacts
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --target aarch64-unknown-linux-gnu --release --workspace --all-features --verbose
-      - uses: actions/upload-artifact@v2
-        with:
-          name: library-ubuntu-aarch64
-          path: target/release/*.so
+      - run: cargo install https://github.com/memflow/memflowup
+      - run: echo "${{ secrets.MEMFLOW_REGISTRY_SIGNING_KEY}}" > ec-secp256k1-priv-key.pem
 
-  build_windows_x86-64:
-    name: Build artifacts for windows-latest (x86-64)
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install rust 1.70.0
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.70.0
-          override: true
-      - name: Build artifacts
-        run: cargo build --release --workspace --all-features --verbose
-      - uses: actions/upload-artifact@v2
-        with:
-          name: library-windows-x86-64
-          path: target/release/*.dll
-
-  build_macos_x86-64:
-    name: Build artifacts for macos-latest (x86-64)
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install rust 1.70.0
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.70.0
-          override: true
-      - name: Build artifacts
-        run: cargo build --release --workspace --all-features --verbose
-      - uses: actions/upload-artifact@v2
-        with:
-          name: library-macos-x86-64
-          path: target/release/*.dylib
-
-  publish_artifacts:
-    name: Publish artifacts
-    runs-on: ubuntu-latest
-    needs: [build_ubuntu_x86-64, build_windows_x86-64, build_macos_x86-64]
-    steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: library-ubuntu-x86-64
-      - name: Create archive for linux x86-64
-        run: zip memflow_coredump_linux_x86-64.zip *.so
-      - name: Upload artifacts for linux x86-64
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: 'memflow_coredump_linux_x86-64.zip'
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: library-ubuntu-aarch64
-      - name: Create archive for linux aarch64
-        run: zip memflow_coredump_linux_aarch64.zip *.so
-      - name: Upload artifacts for linux aarch64
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: 'memflow_coredump_linux_aarch64.zip'
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: library-windows-x86-64
-      - name: Upload windows artifacts
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: '*.dll'
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: library-macos-x86-64
-      - name: Upload macos artifacts
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: '*.dylib'
+      - run: memflowup --skip-version-check push --token {{ secrets.MEMFLOW_REGISTRY_TOKEN }} --priv-key ec-secp256k1-priv-key.pem asdf.pem $(ls *.so)
