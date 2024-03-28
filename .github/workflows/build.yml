@@ -29,9 +29,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          targets: aarch64-unknown-linux-gnu, arm-unknown-linux-gnu
+          targets: aarch64-unknown-linux-gnu
       - run: cargo build --target aarch64-unknown-linux-gnu ${{ matrix.flags }} --release
-      - run: cargo build --target arm-unknown-linux-gnu ${{ matrix.flags }} --release
           
   test:
     runs-on: ${{ matrix.os }}
